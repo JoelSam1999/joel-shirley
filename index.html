@@ -36,7 +36,46 @@ body {
   margin: 0; color: var(--ink); font-family: var(--serif); font-size: 20px; line-height: 1.55;
   font-variant-numeric: lining-nums; -webkit-font-smoothing: antialiased;
   padding: 36px 16px 56px; overflow-x: hidden; min-height: 100vh;
-  background: radial-gradient(ellipse at 50% 0%, #fbf9fc 0, transparent 60%), var(--field);
+  background:
+    radial-gradient(38rem 30rem at 8% 12%, rgba(196,170,226,.45), transparent 70%),
+    radial-gradient(34rem 28rem at 92% 30%, rgba(226,196,222,.40), transparent 70%),
+    radial-gradient(40rem 32rem at 12% 78%, rgba(206,190,236,.38), transparent 70%),
+    radial-gradient(36rem 30rem at 88% 92%, rgba(236,214,200,.35), transparent 70%),
+    var(--field);
+  background-attachment: fixed;
+}
+/* Falling petals and drifting sparkles behind the cards */
+#ambient { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; }
+.stack { position: relative; z-index: 1; }
+
+/* Gentle motion */
+@keyframes rise { from { opacity: .45; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes swayTR { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-1.6deg); } }
+@keyframes swayBL { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(1.4deg); } }
+@keyframes shimmer { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.invite-card > .verse, .invite-card > .crest, .invite-card > .blessing, .invite-card > .name, .invite-card > .of,
+.invite-card > .parents, .invite-card > .and, .invite-card > .invite, .invite-card > .dday, .invite-card > .num,
+.invite-card > .dtime, .invite-card > .venue, .invite-card > .addr, .invite-card > .reception, .invite-card > .link,
+.invite-card > .countdown, .invite-card > .cta { animation: rise .9s cubic-bezier(.2,.7,.2,1) both; }
+.invite-card > .crest { animation-delay: .1s; } .invite-card > .blessing { animation-delay: .2s; }
+.invite-card > .name, .invite-card > .of, .invite-card > .parents { animation-delay: .3s; }
+.invite-card > .and { animation-delay: .4s; }
+.invite-card > .name ~ .name, .invite-card > .name ~ .name ~ .of, .invite-card > .and ~ .parents { animation-delay: .5s; }
+.invite-card > .invite { animation-delay: .6s; }
+.invite-card > .dday, .invite-card > .num, .invite-card > .dtime { animation-delay: .7s; }
+.invite-card > .venue, .invite-card > .addr, .invite-card > .reception, .invite-card > .link { animation-delay: .8s; }
+.invite-card > .countdown, .invite-card > .cta { animation-delay: .9s; }
+.floral.tr { animation: swayTR 9s ease-in-out infinite; }
+.floral.bl { animation: swayBL 11s ease-in-out infinite; }
+.name, .venue, .dday {
+  background: linear-gradient(100deg, #8c6a2c 0%, #b8913f 30%, #e2c47c 45%, #b8913f 60%, #8c6a2c 100%);
+  background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: shimmer 9s ease-in-out infinite;
+}
+.invite-card > .name, .invite-card > .venue, .invite-card > .dday { animation: rise .9s cubic-bezier(.2,.7,.2,1) both, shimmer 9s ease-in-out 1s infinite; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; }
+  #ambient { display: none; }
 }
 .stack { max-width: 660px; margin: 0 auto; display: flex; flex-direction: column; gap: 36px; }
 
@@ -44,13 +83,13 @@ body {
 .card {
   position: relative; overflow: hidden; background: var(--paper);
   box-shadow: 0 30px 60px -30px rgba(70,52,110,.32), 0 4px 14px rgba(70,52,110,.07);
-  padding: 92px 60px 84px; text-align: center;
+  padding: 112px 60px 104px; text-align: center;
   display: flex; flex-direction: column; align-items: center;
 }
 .card > canvas.glitter { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 .floral { position: absolute; z-index: 1; height: auto; pointer-events: none; }
-.floral.tr { width: 46%; top: -1%; right: -1.5%; }
-.floral.bl { width: 50.6%; bottom: -1%; left: -1.5%; }
+.floral.tr { width: 50.6%; top: -1%; right: -1.5%; transform-origin: 100% 0; }
+.floral.bl { width: 55.7%; bottom: -1%; left: -1.5%; transform-origin: 0 100%; }
 .card > :not(canvas):not(.floral) { position: relative; z-index: 2; }
 
 .caps { font-family: var(--caps); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); margin: 0; }
@@ -169,9 +208,9 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
 @media (max-width: 540px) {
   body { font-size: 18px; padding: 20px 12px 44px; }
   .card { padding: 78px 26px 70px; }
-  .invite-card { padding-top: 150px; padding-bottom: 170px; }
-  .floral.tr { width: 53%; }
-  .floral.bl { width: 60%; }
+  .invite-card { padding-top: 172px; padding-bottom: 196px; }
+  .floral.tr { width: 58.3%; }
+  .floral.bl { width: 66%; }
   .verse p { font-size: 18px; }
   .blessing { font-size: 12px; letter-spacing: .1em; }
   .parents { font-size: 12px; letter-spacing: .04em; }
@@ -201,6 +240,8 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
     </g>
   </defs>
 </svg>
+
+<canvas id="ambient" aria-hidden="true"></canvas>
 
 <div class="stack">
 
@@ -392,6 +433,49 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
   if (window.ResizeObserver) { var ro = new ResizeObserver(drawAllGlitter); glitterCanvases.forEach(function (c) { ro.observe(c.parentElement); }); }
   else window.addEventListener("resize", drawAllGlitter);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawAllGlitter);
+
+  // Ambient background: a few slow watercolour petals and soft gold sparkles
+  (function () {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var c = document.getElementById("ambient"), x = c.getContext("2d"), W, H, dpr;
+    function size() { dpr = Math.min(2, window.devicePixelRatio || 1); W = innerWidth; H = innerHeight; c.width = W * dpr; c.height = H * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    size(); addEventListener("resize", size);
+    var hues = [[268, 52, 72], [282, 45, 76], [258, 40, 70], [300, 35, 80], [272, 30, 84]];
+    function petal(init) {
+      var h = hues[Math.floor(Math.random() * hues.length)];
+      return { x: Math.random() * W, y: init ? Math.random() * H : -30, r: 7 + Math.random() * 9, rot: Math.random() * 6.28,
+        vr: (Math.random() - .5) * .012, vy: .18 + Math.random() * .32, sway: Math.random() * 6.28, sa: .4 + Math.random() * .7, h: h,
+        a: .35 + Math.random() * .3 };
+    }
+    var petals = []; for (var i = 0; i < 16; i++) petals.push(petal(true));
+    var sparks = []; for (var j = 0; j < 26; j++) sparks.push({ x: Math.random(), y: Math.random(), p: Math.random() * 6.28, s: .8 + Math.random() * 1.6, v: .008 + Math.random() * .012 });
+    function drawPetal(p) {
+      x.save(); x.translate(p.x, p.y); x.rotate(p.rot); x.globalAlpha = p.a;
+      var g = x.createRadialGradient(0, p.r * .4, 1, 0, 0, p.r * 1.2);
+      g.addColorStop(0, "hsla(" + p.h[0] + "," + p.h[1] + "%," + (p.h[2] - 18) + "%,1)");
+      g.addColorStop(1, "hsla(" + p.h[0] + "," + p.h[1] + "%," + p.h[2] + "%,.7)");
+      x.fillStyle = g; x.beginPath();
+      x.moveTo(0, -p.r); x.bezierCurveTo(p.r * .9, -p.r * .6, p.r * .7, p.r * .7, 0, p.r);
+      x.bezierCurveTo(-p.r * .7, p.r * .7, -p.r * .9, -p.r * .6, 0, -p.r); x.fill(); x.restore();
+    }
+    function star(sx, sy, s, a) {
+      x.save(); x.globalAlpha = a; x.fillStyle = "#d9b866"; x.translate(sx, sy); x.beginPath();
+      x.moveTo(0, -s * 3); x.quadraticCurveTo(0, 0, s * 3, 0); x.quadraticCurveTo(0, 0, 0, s * 3);
+      x.quadraticCurveTo(0, 0, -s * 3, 0); x.quadraticCurveTo(0, 0, 0, -s * 3); x.fill(); x.restore();
+    }
+    var hidden = false; document.addEventListener("visibilitychange", function () { hidden = document.hidden; if (!hidden) requestAnimationFrame(frame); });
+    function frame() {
+      if (hidden) return;
+      x.clearRect(0, 0, W, H);
+      sparks.forEach(function (s) { s.p += s.v; var a = Math.max(0, Math.sin(s.p)) * .55; if (a > .02) star(s.x * W, s.y * H, s.s, a); });
+      petals.forEach(function (p, k) {
+        p.sway += .01; p.y += p.vy; p.x += Math.sin(p.sway) * p.sa * .5; p.rot += p.vr; drawPetal(p);
+        if (p.y > H + 30) petals[k] = petal(false);
+      });
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
 
   // RSVP form
   var MAX_GUESTS = 10;
