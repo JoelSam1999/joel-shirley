@@ -24,6 +24,7 @@
   --gold-deep: #8c6a2c;
   --gold-soft: #d8c49a;
   --purple: #5d4a86;
+  --button: #8e80aa;          /* --purple lightened 30% */
   --wash: #f4eff8;
   --script: "Great Vibes", "Snell Roundhand", cursive;
   --caps: "Cinzel", "Trajan Pro", Georgia, serif;
@@ -46,6 +47,7 @@ body {
 }
 /* Falling petals and drifting sparkles behind the cards */
 #ambient { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; }
+#petals-front { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; }
 .stack { position: relative; z-index: 1; }
 
 /* Gentle motion */
@@ -75,7 +77,7 @@ body {
 .invite-card > .name, .invite-card > .venue, .invite-card > .dday { animation: rise .9s cubic-bezier(.2,.7,.2,1) both, shimmer 9s ease-in-out 1s infinite; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; }
-  #ambient { display: none; }
+  #ambient, #petals-front { display: none; }
 }
 .stack { max-width: 660px; margin: 0 auto; display: flex; flex-direction: column; gap: 36px; }
 
@@ -90,7 +92,7 @@ body {
 .floral { position: absolute; z-index: 1; height: auto; pointer-events: none; }
 .floral.tr { width: 50.6%; top: -1%; right: -1.5%; transform-origin: 100% 0; }
 .floral.bl { width: 55.7%; bottom: -1%; left: -1.5%; transform-origin: 0 100%; }
-.card > :not(canvas):not(.floral) { position: relative; z-index: 2; }
+.card > :not(canvas):not(.floral):not(.butterfly) { position: relative; z-index: 2; }
 
 .caps { font-family: var(--caps); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); margin: 0; }
 
@@ -127,10 +129,13 @@ body {
 
 .cta {
   font-family: var(--caps); font-weight: 600; font-size: 14px; letter-spacing: .22em; text-transform: uppercase;
-  background: var(--purple); color: #fff; border: 1px solid var(--purple); padding: 13px 34px; cursor: pointer;
+  background: var(--button); color: #fff; border: 1px solid var(--button); padding: 13px 34px; cursor: pointer;
   text-decoration: none; display: inline-block; outline: 1px solid var(--gold); outline-offset: 4px;
 }
-.cta:hover { background: var(--ink); }
+.cta:hover { background: var(--purple); border-color: var(--purple); }
+.rsvp-card.reveal { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; }
+.back { align-self: center; background: none; border: 0; border-bottom: 1px solid var(--gold-soft); padding: 0 0 2px; cursor: pointer; font-family: var(--caps); font-weight: 600; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--purple); }
+.back:hover, .back:focus-visible { color: var(--ink); border-color: var(--gold); outline: none; }
 .cta:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
 .cta[disabled] { opacity: .6; cursor: wait; }
 .invite-card .cta { margin-top: 34px; }
@@ -140,6 +145,7 @@ body {
 .rsvp-card header { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .rsvp-card h2 { margin: 6px 0 0; font-family: var(--script); font-weight: 400; font-size: clamp(50px, 12vw, 66px); line-height: 1.1; color: var(--gold); -webkit-text-stroke: .5px var(--gold); }
 .rsvp-card header p { margin: 0; font-style: italic; color: var(--ink-soft); }
+.rsvp-card header .gentle { font-size: 15px; max-width: 38ch; margin-top: 6px; text-wrap: balance; }
 .rsvp-card header .caps { font-size: 13px; font-style: normal; color: var(--ink-soft); }
 form { display: flex; flex-direction: column; gap: 24px; }
 .field { display: flex; flex-direction: column; gap: 8px; border: 0; padding: 0; margin: 0; min-width: 0; }
@@ -178,31 +184,10 @@ input:focus, textarea:focus { outline: none; border-color: var(--gold); box-shad
 .again { background: none; border: 0; border-bottom: 1px solid var(--gold-soft); cursor: pointer; font-family: var(--caps); font-weight: 600; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--purple); padding: 0 0 2px; margin-top: 8px; }
 .sign { margin: 0; text-align: center; font-family: var(--script); font-size: 36px; color: var(--gold); }
 
-/* Gift wish list */
-.gift-note { margin: 0; text-align: center; font-size: 19px; font-style: italic; color: var(--ink-soft); }
-.gift-note button { font: inherit; color: var(--purple); background: none; border: 0; padding: 0 0 1px; border-bottom: 1px solid var(--gold-soft); cursor: pointer; }
-.gift-note button:hover, .gift-note button:focus-visible { color: var(--ink); border-color: var(--gold); outline: none; }
-dialog.gifts { width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 0; border: 0; background: var(--paper); color: var(--ink); box-shadow: 0 30px 80px -20px rgba(40,28,70,.5); }
-dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
-.gifts-inner { position: relative; padding: 48px 40px 40px; display: flex; flex-direction: column; gap: 18px; text-align: center; }
-.gifts-inner::before { content: ""; position: absolute; inset: 12px; border: 1px solid var(--gold-soft); pointer-events: none; }
-.gifts h2 { margin: 0; font-family: var(--script); font-weight: 400; font-size: 52px; line-height: 1.1; color: var(--gold); }
-.gifts .lede { margin: 0; font-style: italic; color: var(--ink-soft); font-size: 18px; text-wrap: balance; }
-.gift-list { list-style: none; margin: 0; padding: 0; text-align: left; display: flex; flex-direction: column; }
-.gift-list li { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid #ece4d6; }
-.gift-list li:last-child { border-bottom: 0; }
-.gift-list a.item { color: var(--purple); text-decoration: none; }
-.gift-list a.item:hover, .gift-list a.item:focus-visible { text-decoration: underline; text-decoration-color: var(--gold); outline: none; }
-.gift-list li.done .item { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: var(--gold-soft); }
-.gift-list li.done .tag { color: var(--ink-soft); }
-.gift-list li.loading, .gift-list li.empty { grid-template-columns: 1fr; text-align: center; font-style: italic; color: var(--ink-soft); }
-.gift-list .item { font-size: 19px; }
-.gift-list .item small { display: block; font-size: 15px; font-style: italic; color: var(--ink-soft); }
-.gift-list .tag { font-family: var(--caps); font-weight: 600; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
-.gifts .close { align-self: center; position: relative; z-index: 1; }
-.gifts .x { position: absolute; top: 18px; right: 22px; z-index: 1; background: none; border: 0; font-size: 28px; line-height: 1; color: var(--ink-soft); cursor: pointer; }
-.gifts .x:focus-visible { outline: 2px solid var(--gold); }
-
+/* Watercolour butterfly that moves between the two flower clusters */
+.butterfly { position: absolute; left: 0; top: 0; width: 66px; height: 62px; margin: -31px 0 0 -33px; z-index: 4; pointer-events: none; will-change: transform; }
+.butterfly svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(1px 4px 3px rgba(60,40,100,.32)); }
+@media (max-width: 540px) { .butterfly { width: 50px; height: 47px; margin: -24px 0 0 -25px; } }
 [hidden] { display: none !important; }
 
 @media (max-width: 540px) {
@@ -218,7 +203,6 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
   .dday { font-size: 42px; }
   .num { gap: 12px; }
   .choices { grid-template-columns: 1fr; }
-  .gifts-inner { padding: 44px 24px 32px; }
 }
 </style>
 </head>
@@ -229,27 +213,23 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
     <g id="crest">
       <circle cx="115" cy="75" r="58" fill="none" stroke="#a8803a" stroke-width="1.6"/>
       <circle cx="115" cy="75" r="52" fill="none" stroke="#cdb27a" stroke-width=".8"/>
-      <text x="113" y="88" text-anchor="middle" font-family="Great Vibes, cursive" font-size="40" fill="#a8803a" stroke="#a8803a" stroke-width=".4">J<tspan font-size="22" dx="1" dy="-4">&amp;</tspan><tspan dx="1" dy="4">S</tspan></text>
+      <text x="113" y="88" text-anchor="middle" font-family="Great Vibes, cursive" font-size="40" fill="#a8803a" stroke="#a8803a" stroke-width=".4"><tspan id="mono-1">J</tspan><tspan font-size="22" dx="1" dy="-4">&amp;</tspan><tspan id="mono-2" dx="1" dy="4">S</tspan></text>
       <path d="M8 75 H50 M180 75 H222" stroke="#a8803a" stroke-width="1.3"/>
       <circle cx="47" cy="75" r="2.6" fill="#a8803a"/><circle cx="183" cy="75" r="2.6" fill="#a8803a"/>
-    </g>
-    <g id="orn">
-      <path d="M0 8 H46 M74 8 H120" stroke="#a8803a" stroke-width="1"/>
-      <path d="M60 1 L67 8 L60 15 L53 8 Z" fill="none" stroke="#a8803a" stroke-width="1"/>
-      <circle cx="60" cy="8" r="2" fill="#8f72c0"/>
     </g>
   </defs>
 </svg>
 
 <canvas id="ambient" aria-hidden="true"></canvas>
+<canvas id="petals-front" aria-hidden="true"></canvas>
 
 <div class="stack">
 
   <!-- Invitation -->
   <main class="card invite-card">
     <canvas class="glitter" aria-hidden="true"></canvas>
-    <img class="floral tr" src="assets/floral-tr.webp" alt="" width="900" height="983">
-    <img class="floral bl" src="assets/floral-bl.webp" alt="" width="1000" height="1140">
+    <img class="floral tr" src="/assets/floral-tr.webp" alt="" width="900" height="983">
+    <img class="floral bl" src="/assets/floral-bl.webp" alt="" width="1000" height="1140">
 
     <div class="verse">
       <p>“When the time is right, I, the LORD, will make it happen.”</p>
@@ -260,17 +240,17 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
 
     <p class="caps blessing">By the grace of God<br>and with the blessings of our families</p>
 
-    <h1 class="name">Joel Sam</h1>
-    <p class="of">son of</p>
-    <p class="caps parents"><span class="nw">Mr. John Solomon</span> &amp; <span class="nw">Mrs. Jenitha Solomon</span></p>
+    <h1 class="name" id="p1-name">Joel Sam</h1>
+    <p class="of" id="p1-of">son of</p>
+    <p class="caps parents" id="p1-par"><span class="nw">Mr. John Solomon</span> &amp; <span class="nw">Mrs. Jenitha Solomon</span></p>
 
     <p class="caps and">and</p>
 
-    <h1 class="name">Shirley George</h1>
-    <p class="of">daughter of</p>
-    <p class="caps parents"><span class="nw">The late Mr. George Udaya Sagar</span> &amp; <span class="nw">Mrs. Devamani J</span></p>
+    <h1 class="name" id="p2-name">Shirley George</h1>
+    <p class="of" id="p2-of">daughter of</p>
+    <p class="caps parents" id="p2-par"><span class="nw">The late Mr. George Udaya Sagar</span> &amp; <span class="nw">Mrs. Devamani J</span></p>
 
-    <p class="caps invite">joyfully invite you<br>to the celebration of their holy matrimony</p>
+    <p class="caps invite">together with their families<br>joyfully invite you to the celebration<br>of their holy matrimony</p>
 
     <p class="dday">Wednesday</p>
     <p class="num" aria-label="16 December 2026">16<i></i>12<i></i>2026</p>
@@ -287,18 +267,21 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
       <div><b id="cd-m">–</b><span>Minutes</span></div>
     </div>
 
-    <a class="cta" href="#rsvp" onclick="document.getElementById('rsvp').scrollIntoView({behavior:'smooth'});return false;">RSVP</a>
+    <a class="cta" href="#rsvp" id="open-rsvp">RSVP</a>
   </main>
 
   <!-- RSVP -->
-  <section class="card rsvp-card" id="rsvp" aria-labelledby="rsvp-title">
+  <section class="card rsvp-card" id="rsvp" aria-labelledby="rsvp-title" hidden>
     <canvas class="glitter" aria-hidden="true"></canvas>
+
+    <button class="back" type="button" id="back-invite">↑ Back to the invitation</button>
 
     <header>
       <svg class="crest" viewBox="0 0 230 150" aria-hidden="true" style="width:120px;margin-top:0"><use href="#crest"/></svg>
       <h2 id="rsvp-title">Kindly Reply</h2>
       <p class="caps">by 1 December 2026</p>
       <p>We'd love to know who's coming so we can save you a seat.</p>
+      <p class="gentle">Forgot to RSVP? Please come anyway. Your reply just helps us know how many will join us, so we can plan better.</p>
     </header>
 
     <form id="form" novalidate>
@@ -373,24 +356,11 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
     <p class="sign">With love &amp; gratitude</p>
   </section>
 
-  <p class="gift-note">Wondering what to gift us? <button type="button" id="open-gifts">See our wish list</button></p>
 </div>
 
-<dialog class="gifts" id="gifts" aria-labelledby="gifts-title">
-  <div class="gifts-inner">
-    <button class="x" type="button" id="x-gifts" aria-label="Close">×</button>
-    <svg viewBox="0 0 120 16" width="110" style="align-self:center" aria-hidden="true"><use href="#orn"/></svg>
-    <h2 id="gifts-title">Our Wish List</h2>
-    <p class="lede">Your presence is the greatest gift. If you'd still like to bless us as we set up our new home, here are a few ideas.</p>
-    <ul class="gift-list" id="gift-list" aria-live="polite">
-      <li class="loading"><span class="item">Loading our wish list…</span></li>
-    </ul>
-    <button class="cta close" type="button" id="close-gifts">Close</button>
-  </div>
-</dialog>
 
 <script>
-  // Your Google Apps Script web app URL (ends in /exec). Saves RSVPs to the Sheet and reads the wish list.
+  // Your Google Apps Script web app URL (ends in /exec). Saves RSVPs to the Google Sheet.
   var API_URL = "https://script.google.com/macros/s/AKfycbz5I0pJrMpWOLAOSXRlXCccdNSqfCjLehiwpO4yLBH3DHUyDGOa-dFIGkS1E9CwKauz/exec";
 </script>
 <script>
@@ -406,6 +376,15 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
     document.getElementById("cd-m").textContent = pad(Math.floor(ms / 6e4));
   }
   tick(); setInterval(tick, 30000);
+
+  // joelandshirley.life/sg shows Shirley's name first (for the bride's family); everything else is shared
+  var brideFirst = /^\/sg\/?$/i.test(location.pathname);
+  if (brideFirst) {
+    var swap = function (a, b) { var A = document.getElementById(a), B = document.getElementById(b), t = A.innerHTML; A.innerHTML = B.innerHTML; B.innerHTML = t; };
+    swap("p1-name", "p2-name"); swap("p1-of", "p2-of"); swap("p1-par", "p2-par"); swap("mono-1", "mono-2");
+    document.title = "Shirley & Joel · Wedding";
+    document.querySelectorAll('svg[aria-label="J and S monogram"]').forEach(function (el) { el.setAttribute("aria-label", "S and J monogram"); });
+  }
 
   // Gold glitter along the edge of each card, redrawn when the card changes size
   function drawGlitter(canvas) {
@@ -444,7 +423,7 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
     function petal(init) {
       var h = hues[Math.floor(Math.random() * hues.length)];
       return { x: Math.random() * W, y: init ? Math.random() * H : -30, r: 7 + Math.random() * 9, rot: Math.random() * 6.28,
-        vr: (Math.random() - .5) * .012, vy: .18 + Math.random() * .32, sway: Math.random() * 6.28, sa: .4 + Math.random() * .7, h: h,
+        vr: (Math.random() - .5) * .006, vy: .08 + Math.random() * .14, sway: Math.random() * 6.28, sa: .4 + Math.random() * .7, h: h,
         a: .35 + Math.random() * .3 };
     }
     var petals = []; for (var i = 0; i < 16; i++) petals.push(petal(true));
@@ -469,12 +448,196 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
       x.clearRect(0, 0, W, H);
       sparks.forEach(function (s) { s.p += s.v; var a = Math.max(0, Math.sin(s.p)) * .55; if (a > .02) star(s.x * W, s.y * H, s.s, a); });
       petals.forEach(function (p, k) {
-        p.sway += .01; p.y += p.vy; p.x += Math.sin(p.sway) * p.sa * .5; p.rot += p.vr; drawPetal(p);
+        p.sway += .005; p.y += p.vy; p.x += Math.sin(p.sway) * p.sa * .5; p.rot += p.vr; drawPetal(p);
         if (p.y > H + 30) petals[k] = petal(false);
       });
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
+  })();
+
+  // A few petals that drift down over the cards (pointer-events off, so taps still reach the page)
+  (function () {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var c = document.getElementById("petals-front"), x = c.getContext("2d"), W, H, dpr;
+    function size() { dpr = Math.min(2, window.devicePixelRatio || 1); W = innerWidth; H = innerHeight; c.width = W * dpr; c.height = H * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    size(); addEventListener("resize", size);
+    var hues = [[268, 52, 72], [282, 45, 76], [258, 40, 70], [300, 35, 80], [272, 30, 84]];
+    function petal(init) {
+      var h = hues[Math.floor(Math.random() * hues.length)];
+      return { x: Math.random() * W, y: init ? Math.random() * H : -30, r: 7 + Math.random() * 9, rot: Math.random() * 6.28,
+        vr: (Math.random() - .5) * .006, vy: .09 + Math.random() * .12, sway: Math.random() * 6.28, sa: .4 + Math.random() * .7, h: h,
+        a: .55 + Math.random() * .25 };
+    }
+    var petals = []; for (var i = 0; i < 7; i++) petals.push(petal(true));
+    var sparks = []; for (var j = 0; j < 0; j++) sparks.push({ x: Math.random(), y: Math.random(), p: Math.random() * 6.28, s: .8 + Math.random() * 1.6, v: .008 + Math.random() * .012 });
+    function drawPetal(p) {
+      x.save(); x.translate(p.x, p.y); x.rotate(p.rot); x.globalAlpha = p.a;
+      var g = x.createRadialGradient(0, p.r * .4, 1, 0, 0, p.r * 1.2);
+      g.addColorStop(0, "hsla(" + p.h[0] + "," + p.h[1] + "%," + (p.h[2] - 18) + "%,1)");
+      g.addColorStop(1, "hsla(" + p.h[0] + "," + p.h[1] + "%," + p.h[2] + "%,.7)");
+      x.fillStyle = g; x.beginPath();
+      x.moveTo(0, -p.r); x.bezierCurveTo(p.r * .9, -p.r * .6, p.r * .7, p.r * .7, 0, p.r);
+      x.bezierCurveTo(-p.r * .7, p.r * .7, -p.r * .9, -p.r * .6, 0, -p.r); x.fill(); x.restore();
+    }
+    function star(sx, sy, s, a) {
+      x.save(); x.globalAlpha = a; x.fillStyle = "#d9b866"; x.translate(sx, sy); x.beginPath();
+      x.moveTo(0, -s * 3); x.quadraticCurveTo(0, 0, s * 3, 0); x.quadraticCurveTo(0, 0, 0, s * 3);
+      x.quadraticCurveTo(0, 0, -s * 3, 0); x.quadraticCurveTo(0, 0, 0, -s * 3); x.fill(); x.restore();
+    }
+    var hidden = false; document.addEventListener("visibilitychange", function () { hidden = document.hidden; if (!hidden) requestAnimationFrame(frame); });
+    function frame() {
+      if (hidden) return;
+      x.clearRect(0, 0, W, H);
+      sparks.forEach(function (s) { s.p += s.v; var a = Math.max(0, Math.sin(s.p)) * .55; if (a > .02) star(s.x * W, s.y * H, s.s, a); });
+      petals.forEach(function (p, k) {
+        p.sway += .005; p.y += p.vy; p.x += Math.sin(p.sway) * p.sa * .5; p.rot += p.vr; drawPetal(p);
+        if (p.y > H + 30) petals[k] = petal(false);
+      });
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+
+  // The RSVP page stays hidden until a guest taps RSVP
+  var rsvpCard = document.getElementById("rsvp");
+  function openRsvp(scroll) {
+    if (rsvpCard.hidden) {
+      rsvpCard.hidden = false;
+      rsvpCard.classList.add("reveal");
+      drawAllGlitter();
+    }
+    if (scroll) requestAnimationFrame(function () { rsvpCard.scrollIntoView({ behavior: "smooth", block: "start" }); });
+  }
+  document.getElementById("open-rsvp").addEventListener("click", function (e) { e.preventDefault(); openRsvp(true); });
+  document.getElementById("back-invite").addEventListener("click", function () {
+    document.querySelector(".invite-card").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  if (location.hash === "#rsvp") openRsvp(true);
+
+  // Watercolour butterfly: flies in, rests on the top flowers, then every 10 s flies to the other cluster.
+  // Wings are hinged on the body with SVG transforms (scale about the body's centre), so they never drift apart.
+  (function () {
+    var card = document.querySelector(".invite-card");
+    var tr = card.querySelector(".floral.tr"), bl = card.querySelector(".floral.bl");
+    // Wing painted like a watercolour: soft lilac-periwinkle wash, mottled pigment, dark bleeding edge, fine veins, a few dots
+    var UP = "M0 -2 C 6 -20, 20 -40, 40 -45 C 48 -47, 52 -41, 50 -32 C 48 -20, 44 -10, 37 -4 C 26 0, 12 1, 0 2 Z";
+    var LO = "M0 2 C 14 3, 30 6, 38 14 C 45 22, 41 34, 31 40 C 23 45, 15 44, 10 39 C 6 30, 2 16, 0 6 Z";
+    var wingShapes =
+      // pigment bleeding softly past the edge
+      '<path d="' + UP + '" fill="none" stroke="#8f86da" stroke-width="7" opacity=".32" filter="url(#bf-bleed)"/>' +
+      '<path d="' + LO + '" fill="none" stroke="#8f86da" stroke-width="6" opacity=".3" filter="url(#bf-bleed)"/>' +
+      '<g filter="url(#bf-shape)">' +
+        '<path d="' + UP + '" fill="url(#bf-wash)" opacity=".94"/><path d="' + LO + '" fill="url(#bf-wash2)" opacity=".94"/>' +
+        '<g clip-path="url(#bf-clip)">' +
+          // pigment blooms: patches of blue and violet that pooled while wet
+          '<g filter="url(#bf-soft)" opacity=".55"><ellipse cx="30" cy="-28" rx="11" ry="7" fill="#5f74d6" transform="rotate(-35 30 -28)"/>' +
+            '<ellipse cx="18" cy="-14" rx="9" ry="5" fill="#8a62cc"/><ellipse cx="38" cy="-12" rx="7" ry="5" fill="#4f63c4"/>' +
+            '<ellipse cx="24" cy="24" rx="9" ry="7" fill="#6577d8"/><ellipse cx="14" cy="34" rx="6" ry="5" fill="#9268d0"/></g>' +
+          '<rect x="-2" y="-50" width="56" height="98" filter="url(#bf-mottle)"/>' +
+          '<rect x="-2" y="-50" width="56" height="98" filter="url(#bf-bloom)"/>' +
+          '<rect x="-2" y="-50" width="56" height="98" filter="url(#bf-grain)" opacity=".5"/>' +
+          // dark wet edge
+          '<path d="' + UP + '" fill="none" stroke="#2c2a74" stroke-width="10" filter="url(#bf-edge)" opacity=".9"/>' +
+          '<path d="' + LO + '" fill="none" stroke="#2c2a74" stroke-width="9" filter="url(#bf-edge)" opacity=".88"/>' +
+          // a hard "bloom" line where the wash dried
+          '<path d="M8 -6 C 18 -16, 30 -26, 38 -34" stroke="#5a55b8" stroke-width="1.2" fill="none" opacity=".35" filter="url(#bf-soft2)"/>' +
+        '</g>' +
+      '</g>' +
+      '<g stroke="#2a285f" stroke-width=".5" fill="none" opacity=".5" stroke-linecap="round">' +
+        '<path d="M2 -1 C 16 -14, 30 -30, 44 -42"/><path d="M2 -1 C 18 -10, 34 -20, 48 -30"/><path d="M2 0 C 18 -4, 30 -8, 40 -11"/>' +
+        '<path d="M2 -1 C 10 -16, 18 -30, 28 -40"/><path d="M2 3 C 16 6, 28 10, 37 16"/><path d="M2 4 C 14 14, 24 26, 31 36"/><path d="M2 5 C 8 18, 12 30, 16 41"/>' +
+      '</g>' +
+      '<g fill="#25235c" opacity=".75"><circle cx="22" cy="-30" r="1"/><circle cx="31" cy="-18" r=".8"/><circle cx="17" cy="-12" r="1.1"/>' +
+        '<circle cx="26" cy="22" r=".9"/><circle cx="18" cy="30" r="1.2"/><circle cx="40" cy="-36" r=".7"/></g>' +
+      // splatter around the wing
+      '<g fill="#5b56c0" opacity=".45"><circle cx="53" cy="-38" r="1.1"/><circle cx="50" cy="-8" r=".7"/><circle cx="44" cy="30" r="1"/>' +
+        '<circle cx="36" cy="46" r=".6"/><circle cx="55" cy="-24" r=".5"/></g>';
+    var el = document.createElement("div");
+    el.className = "butterfly";
+    el.setAttribute("aria-hidden", "true");
+    el.innerHTML = '<svg viewBox="-56 -54 112 104"><defs>' +
+      '<radialGradient id="bf-wash" gradientUnits="userSpaceOnUse" cx="4" cy="-4" r="52"><stop offset="0" stop-color="#e2dcf7"/><stop offset=".35" stop-color="#c3baf0"/><stop offset=".75" stop-color="#9890dd"/><stop offset="1" stop-color="#6f68c4"/></radialGradient>' +
+      '<radialGradient id="bf-wash2" gradientUnits="userSpaceOnUse" cx="4" cy="6" r="44"><stop offset="0" stop-color="#ddd6f6"/><stop offset=".45" stop-color="#b6aeea"/><stop offset="1" stop-color="#7a72cc"/></radialGradient>' +
+      '<clipPath id="bf-clip"><path d="' + UP + '"/><path d="' + LO + '"/></clipPath>' +
+      '<filter id="bf-mottle" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".07" numOctaves="3" seed="11"/>' +
+        '<feColorMatrix values="0 0 0 0 .26  0 0 0 0 .30  0 0 0 0 .76  0 0 0 3 -1.25"/></filter>' +
+      '<filter id="bf-bloom" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="3"/>' +
+        '<feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.6 -1.35"/></filter>' +
+      '<filter id="bf-shape" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="8"/><feDisplacementMap in="SourceGraphic" scale="3.2"/></filter>' +
+      '<filter id="bf-bleed" x="-30%" y="-30%" width="160%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="2"/><feDisplacementMap in="SourceGraphic" scale="7"/><feGaussianBlur stdDeviation="2.6"/></filter>' +
+      '<filter id="bf-soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3.2"/></filter>' +
+      '<filter id="bf-soft2"><feGaussianBlur stdDeviation=".5"/></filter>' +
+      '<filter id="bf-grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" seed="6"/><feColorMatrix values="0 0 0 0 .18  0 0 0 0 .16  0 0 0 0 .45  0 0 0 3 -1.6"/></filter>' +
+      '<filter id="bf-edge" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency=".12" numOctaves="2" seed="5"/>' +
+        '<feDisplacementMap in="SourceGraphic" scale="8"/><feGaussianBlur stdDeviation="1.3"/></filter>' +
+      '</defs>' +
+      '<g id="bf-wl" transform="scale(-1,1)">' + wingShapes + '</g><g id="bf-wr">' + wingShapes + '</g>' +
+      '<ellipse cx="0" cy="-9" rx="2.6" ry="5" fill="#2a2852"/><ellipse cx="0" cy="6" rx="1.7" ry="15" fill="#2a2852"/><circle cx="0" cy="-16" r="2.5" fill="#2a2852"/>' +
+      '<path d="M-1 -18 C -4 -30, -10 -40, -17 -48 M1 -18 C 4 -30, 10 -40, 17 -48" stroke="#2a2852" stroke-width=".8" fill="none" stroke-linecap="round"/>' +
+      '<circle cx="-17" cy="-48" r="1.2" fill="#2a2852"/><circle cx="17" cy="-48" r="1.2" fill="#2a2852"/></svg>';
+    card.appendChild(el);
+    var wl = el.querySelector("#bf-wl"), wr = el.querySelector("#bf-wr");
+
+    var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches, flying = false;
+    // Wing beats from the first version: quick light flaps in flight, a gentle double flutter every few seconds at rest
+    function setWings(k) { wr.setAttribute("transform", "scale(" + k.toFixed(3) + ",1)"); wl.setAttribute("transform", "scale(" + (-k).toFixed(3) + ",1)"); }
+    function restK(now) {
+      var c = (now % 3200) / 3200, seg = function (a, b, ka, kb) { var f = (c - a) / (b - a); f = .5 - .5 * Math.cos(f * Math.PI); return ka + (kb - ka) * f; };
+      if (c < .70) return 1;
+      if (c < .78) return seg(.70, .78, 1, .45);
+      if (c < .86) return seg(.78, .86, .45, .95);
+      if (c < .92) return seg(.86, .92, .95, .55);
+      return seg(.92, 1, .55, 1);
+    }
+    if (!reduced) (function wings(now) {
+      setWings(flying ? 0.22 + 0.78 * Math.abs(Math.cos(now / 320 * Math.PI)) : restK(now));
+      requestAnimationFrame(wings);
+    })(performance.now());
+
+    function spot(img, fx, fy) {
+      var c = card.getBoundingClientRect(), r = img.getBoundingClientRect();
+      return { x: r.left - c.left + r.width * fx, y: r.top - c.top + r.height * fy };
+    }
+    var spots = [function () { return spot(tr, 0.56, 0.22); }, function () { return spot(bl, 0.38, 0.77); }];
+    var pos = { x: -60, y: 220 }, at = 0;
+    function place(p, a) { el.style.transform = "translate(" + p.x.toFixed(1) + "px," + p.y.toFixed(1) + "px) rotate(" + a.toFixed(1) + "deg)"; }
+
+    if (reduced) {
+      var still = function () { place(spots[0](), -8); };
+      still(); addEventListener("resize", still); if (window.ResizeObserver) new ResizeObserver(still).observe(card);
+      return;
+    }
+    place(pos, 0);
+
+    // Flight from the first version: one smooth arc with a light flutter, banking gently with its direction
+    function fly(to, done) {
+      var from = { x: pos.x, y: pos.y }, end = to();
+      var dx = end.x - from.x, dy = end.y - from.y, dist = Math.hypot(dx, dy) || 1;
+      var dur = Math.min(6000, Math.max(2600, dist * 4.2));
+      var bend = (Math.random() < .5 ? -1 : 1) * Math.min(220, dist * .35);
+      var ctrl = { x: (from.x + end.x) / 2 - dy / dist * bend, y: (from.y + end.y) / 2 + dx / dist * bend };
+      var t0 = performance.now();
+      flying = true;
+      (function step(now) {
+        var t = Math.min(1, (now - t0) / dur), e = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        end = to();                                    // follow the flower if the page reflows
+        var u = 1 - e;
+        var x = u * u * from.x + 2 * u * e * ctrl.x + e * e * end.x;
+        var y = u * u * from.y + 2 * u * e * ctrl.y + e * e * end.y + Math.sin(t * Math.PI * 10) * 10 * Math.sin(t * Math.PI);
+        var vx = 2 * (1 - e) * (ctrl.x - from.x) + 2 * e * (end.x - ctrl.x);
+        var a = Math.max(-28, Math.min(28, vx * 0.02)) * Math.sin(t * Math.PI);
+        pos = { x: x, y: y }; place(pos, a);
+        if (t < 1) requestAnimationFrame(step);
+        else { pos = end; place(pos, -8); flying = false; done(); }
+      })(t0);
+    }
+    function settleSpot() { if (!flying) { pos = spots[at](); place(pos, -8); } }
+    addEventListener("resize", settleSpot);
+    if (window.ResizeObserver) new ResizeObserver(settleSpot).observe(card);
+
+    function cycle() { fly(spots[at], function () { setTimeout(function () { at = 1 - at; cycle(); }, 10000); }); }
+    setTimeout(cycle, 1400);
   })();
 
   // RSVP form
@@ -520,7 +683,8 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
       reception: document.getElementById("reception").checked,
       meal: mealEl ? mealEl.value : "",
       phone: document.getElementById("phone").value,
-      note: document.getElementById("note").value
+      note: document.getElementById("note").value,
+      side: brideFirst ? "Shirley\u2019s side" : "Joel\u2019s side"
     };
 
     sendBtn.disabled = true; sendBtn.textContent = "Sending…";
@@ -551,50 +715,6 @@ dialog.gifts::backdrop { background: rgba(58,49,80,.45); }
     form.reset(); guests = 1; renderGuests(); comingOnly.hidden = false;
     document.getElementById("thanks").hidden = true; form.hidden = false;
   };
-  // Gift wish list: read live from the "Wish List" tab of the Google Sheet each time it opens
-  var gifts = document.getElementById("gifts");
-  var giftList = document.getElementById("gift-list");
-  function giftRow(text, cls) {
-    var li = document.createElement("li"); li.className = cls;
-    var span = document.createElement("span"); span.className = "item"; span.textContent = text;
-    li.appendChild(span); return li;
-  }
-  function renderGifts(list) {
-    giftList.textContent = "";
-    if (!list || !list.length) { giftList.appendChild(giftRow("Our wish list is being updated. Please check back soon.", "empty")); return; }
-    list.forEach(function (g) {
-      var li = document.createElement("li");
-      if (g.gifted) li.className = "done";
-      var name = document.createElement(g.link && !g.gifted ? "a" : "span");
-      name.className = "item";
-      name.textContent = g.item;
-      if (g.link && !g.gifted) { name.href = g.link; name.target = "_blank"; name.rel = "noopener"; }
-      if (g.details) { var sm = document.createElement("small"); sm.textContent = g.details; name.appendChild(sm); }
-      var tag = document.createElement("span"); tag.className = "tag";
-      tag.textContent = g.gifted ? "Gifted" : (g.category || "");
-      li.appendChild(name); li.appendChild(tag);
-      giftList.appendChild(li);
-    });
-  }
-  function loadGifts() {
-    giftList.textContent = "";
-    giftList.appendChild(giftRow("Loading our wish list…", "loading"));
-    fetch(API_URL + "?action=wishlist")
-      .then(function (r) { return r.json(); })
-      .then(function (res) { renderGifts(res && res.items); })
-      .catch(function () {
-        giftList.textContent = "";
-        giftList.appendChild(giftRow("We couldn't load the wish list right now. Please try again in a moment.", "empty"));
-      });
-  }
-  document.getElementById("open-gifts").onclick = function () {
-    loadGifts();
-    if (gifts.showModal) gifts.showModal(); else gifts.setAttribute("open", "");
-  };
-  function closeGifts() { if (gifts.close) gifts.close(); else gifts.removeAttribute("open"); }
-  document.getElementById("close-gifts").onclick = closeGifts;
-  document.getElementById("x-gifts").onclick = closeGifts;
-  gifts.addEventListener("click", function (e) { if (e.target === gifts) closeGifts(); });
 </script>
 </body>
 </html>
